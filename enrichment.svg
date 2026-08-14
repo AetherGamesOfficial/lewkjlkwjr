@@ -982,29 +982,32 @@
             });
         }
 
-        function playGame(game) {
+        function openInResearch(url) {
+            if (!url) return;
+            window.parent.location.href = `https://cdn.jsdelivr.net/gh/AetherGamesOfficial/Aetherhtmlstatic@main/research.svg?goto=${encodeURIComponent(url)}`;
+        }
+
+        async function playGame(game) {
             if (game.html_url) {
                 openHtmlGame(game);
                 return;
             }
 
             if (game.url) {
-                window.parent.location.href = `https://cdn.jsdelivr.net/gh/AetherGamesOfficial/Aetherhtmlstatic@main/research.svg?goto=${encodeURIComponent(game.url)}`;
+                openInResearch(game.url);
                 return;
             }
 
-            Lumin.loadGame(game.id).catch(async () =&gt; {
-                try {
-                    const result = await Lumin.getGameUrl(game.id);
-                    const url = result?.url || result;
-                    if (url) {
-                        window.parent.location.href = `https://cdn.jsdelivr.net/gh/AetherGamesOfficial/Aetherhtmlstatic@main/research.svg?goto=${encodeURIComponent(url)}`;
-                    }
-                } catch (err) {
-                    console.error(&quot;Game launch failed:&quot;, err);
-                    setStatus(&quot;Could not open game.&quot;);
-                }
-            });
+            try {
+                setStatus(`Opening ${game.name}...`);
+                const result = await Lumin.getGameUrl(game.id);
+                const url = result?.url || result;
+                if (!url) throw new Error(&quot;Lumin did not return a game URL.&quot;);
+                openInResearch(url);
+            } catch (err) {
+                console.error(&quot;Game launch failed:&quot;, err);
+                setStatus(&quot;Could not open game.&quot;);
+            }
         }
 
         async function openHtmlGame(game) {

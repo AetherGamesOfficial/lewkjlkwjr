@@ -973,29 +973,32 @@
             });
         }
 
-        function playGame(game) {
+        function openInResearch(url) {
+            if (!url) return;
+            window.location.href = `research.html?goto=${encodeURIComponent(url)}`;
+        }
+
+        async function playGame(game) {
             if (game.html_url) {
                 openHtmlGame(game);
                 return;
             }
 
             if (game.url) {
-                window.location.href = `research.html?goto=${encodeURIComponent(game.url)}`;
+                openInResearch(game.url);
                 return;
             }
 
-            Lumin.loadGame(game.id).catch(async () => {
-                try {
-                    const result = await Lumin.getGameUrl(game.id);
-                    const url = result?.url || result;
-                    if (url) {
-                        window.location.href = `research.html?goto=${encodeURIComponent(url)}`;
-                    }
-                } catch (err) {
-                    console.error("Game launch failed:", err);
-                    setStatus("Could not open game.");
-                }
-            });
+            try {
+                setStatus(`Opening ${game.name}...`);
+                const result = await Lumin.getGameUrl(game.id);
+                const url = result?.url || result;
+                if (!url) throw new Error("Lumin did not return a game URL.");
+                openInResearch(url);
+            } catch (err) {
+                console.error("Game launch failed:", err);
+                setStatus("Could not open game.");
+            }
         }
 
         async function openHtmlGame(game) {
