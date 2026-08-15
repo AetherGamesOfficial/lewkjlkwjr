@@ -192,8 +192,14 @@ const messages = [
     &quot;introvents... UNITE&quot;
 ];
 
-document.getElementById(&quot;message&quot;).textContent =
-    messages[Math.floor(Math.random() * messages.length)];
+const messageEl = document.getElementById(&quot;message&quot;);
+
+function showNextMessage() {
+    messageEl.textContent = messages[Math.floor(Math.random() * messages.length)];
+}
+
+showNextMessage();
+setInterval(showNextMessage, 2600);
 &lt;/script&gt;
 
 &lt;/body&gt;
